@@ -13,111 +13,18 @@ from src.schemas import DatasetSample, ReviewStatus
 logger = logging.getLogger(__name__)
 
 
-# ─── Stage 12: Dataset Packaging ─────────────────────────────────────────────
-
-DATASET_CARD_TEMPLATE = """\
----
-language:
-  - en
-  - hi
-license: cc-by-4.0
-task_categories:
-  - text-to-speech
-  - automatic-speech-recognition
-tags:
-  - indian-english
-  - hindi
-  - tts
-  - speech
-  - emotion
-  - sarvam
-pretty_name: Indian TTS Dataset (en-IN + hi-IN)
-size_categories:
-  - 1K<n<10K
----
-
-# Indian TTS Dataset
-
-A high-quality Text-to-Speech training dataset of ~60 minutes total duration:
-- ~30 minutes **Indian English** (en-IN)
-- ~30 minutes **Hindi** (hi-IN)
-
-## Dataset Details
-
-| Field | Value |
-|---|---|
-| Total samples | {total_samples} |
-| Total duration | {total_duration_min:.1f} minutes |
-| en-IN samples | {en_samples} ({en_duration:.1f} min) |
-| hi-IN samples | {hi_samples} ({hi_duration:.1f} min) |
-| Accept rate | {accept_rate:.1%} |
-
-## Schema
-
-Each sample contains:
-
-```python
-{{
-    "audio":              AudioFile,      # WAV, 16kHz mono
-    "language":           str,            # "en-IN" or "hi-IN"
-    "speaker_id":         str,            # e.g. "eng_spk_01"
-    "duration":           float,          # seconds
-    "transcript":         str,            # cleaned text
-    "emotion":            str,            # emotion label
-    "emotion_confidence": float,          # 0–1
-    "style":              str,            # speaking style
-    "source":             str,            # YouTube video ID
-    "asr_confidence":     float,          # Sarvam ASR confidence
-    "segment_id":         str,
-    "channel":            str,
-    "video_title":        str,
-    "rms_energy_db":      float,
-    "estimated_snr_db":   float,
-    "speech_rate_wpm":    float,
-    "clipping_ratio":     float,
-    "silence_ratio":      float,
-    "llm_quality_score":  float,
-    "final_score":        float,
-}}
-```
-
+'''
 ## Pipeline
 
 Built with the **TTS Dataset Pipeline** using:
 - `yt-dlp` for audio ingestion
 - `ffmpeg` for WAV extraction (16kHz mono)
 - **Sarvam Diarization API** for speaker separation
-- **Sarvam ASR (saarika:v2)** for transcription
-- **Sarvam LLM (sarvam-m)** for transcript QA and emotion labeling
+- **Sarvam ASR (saaras:v3)** for transcription
+- **Sarvam LLM (sarvam-105B)** for transcript QA and emotion labeling
 - `librosa` for acoustic feature extraction
-- Human review via Streamlit dashboard
 
-## Quality Scoring
-
-| Component | Weight |
-|---|---|
-| Audio quality (SNR, clipping, silence) | 35% |
-| Transcript quality (ASR + LLM QA) | 35% |
-| Speaker purity (diarization confidence) | 20% |
-| Emotion confidence | 10% |
-
-**Accept threshold:** ≥ 0.75  
-**Review threshold:** ≥ 0.55  
-
-## Emotion Distribution
-
-{emotion_table}
-
-## Citation
-
-```bibtex
-@dataset{{indian_tts_dataset,
-    title={{Indian TTS Dataset (en-IN + hi-IN)}},
-    year={{2024}},
-    note={{Created with the TTS Dataset Pipeline using Sarvam APIs}}
-}}
-```
-"""
+'''
 
 
 def build_dataset_dataframe(
@@ -262,7 +169,7 @@ def publish_to_huggingface(
             token=hf_token,
         )
 
-    logger.info("✅ Dataset published: https://huggingface.co/datasets/%s", repo_id)
+    logger.info(" Dataset published: https://huggingface.co/datasets/%s", repo_id)
 
 
 # ─── Stage 13: Analytics ──────────────────────────────────────────────────────

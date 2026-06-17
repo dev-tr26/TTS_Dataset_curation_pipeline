@@ -62,19 +62,8 @@ def split_for_diarization(
 # ─── Stage 4: Speaker Diarization via Sarvam Batch API ───────────────────────
 
 class SarvamDiarizer:
-    """
-    Uses the Sarvam SDK batch job API for diarization.
 
-    Install SDK:  pip install sarvamai
-
-    Batch workflow per file:
-        job = client.speech_to_text_job.create_job(model=..., with_diarization=True)
-        job.upload_files([audio_path])
-        job.start()
-        job.wait_until_complete(timeout=600)
-        outputs = job.download_outputs(output_dir)
-        # outputs[0] contains the JSON transcript with diarized_transcript field
-    """
+    # Uses the Sarvam SDK batch job API for diarization.
 
     def __init__(self, api_key: str, base_url: str = "https://api.sarvam.ai"):
         self.api_key = api_key

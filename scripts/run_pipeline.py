@@ -1,15 +1,5 @@
-"""
-scripts/run_pipeline.py
-Main orchestrator — runs all 13 pipeline stages end-to-end.
+# Main orchestrator — runs all 13 pipeline stages end-to-end.
 
-Usage:
-    python scripts/run_pipeline.py videos.csv
-
-Environment variables required:
-    SARVAM_API_KEY  — Sarvam API key from dashboard.sarvam.ai
-    HF_TOKEN        — HuggingFace write token
-    HF_REPO_ID      — e.g. "username/indian-tts-dataset"
-"""
 from __future__ import annotations
 
 import json
