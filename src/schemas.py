@@ -1,5 +1,4 @@
 """
-src/schemas.py
 Central Pydantic schemas shared across all pipeline stages.
 """
 from __future__ import annotations

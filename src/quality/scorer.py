@@ -1,6 +1,4 @@
 """
-src/quality/scorer.py
-Stage 11 — Final quality scoring framework.
 Combines scores from Stages 7, 8, 9 + speaker purity into a single weighted score.
 Decides Accept / Needs Review / Reject.
 """

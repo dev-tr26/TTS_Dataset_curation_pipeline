@@ -1,5 +1,4 @@
 """
-src/ingestion/ingest.py
 Stage 1 — Download YouTube videos, extract metadata, track provenance.
 """
 from __future__ import annotations

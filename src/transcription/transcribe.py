@@ -1,8 +1,5 @@
 """
-src/transcription/transcribe.py
 Stage 6 — Sarvam ASR: transcribe candidate segments with word timestamps.
-
-src/validation/validate.py  (also in this file for convenience)
 Stage 7 — 4-layer transcript validation + Sarvam LLM quality check.
 """
 from __future__ import annotations

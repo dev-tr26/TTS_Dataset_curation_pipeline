@@ -1,8 +1,3 @@
-"""
-src/packaging/publish.py
-Stage 12 — Package the reviewed dataset and publish to HuggingFace Hub.
-Stage 13 — Generate dataset analytics figures.
-"""
 from __future__ import annotations
 
 import json

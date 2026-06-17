@@ -1,19 +1,5 @@
 """
-src/diarization/diarize.py
-Stage 4 — Sarvam BATCH API for diarization (NOT the real-time endpoint).
-
-Root cause of the previous error:
-    "Diarization is not supported in the real-time API.
-     Please use the batch API for diarization."
-
-Fix:
-    Use the Sarvam Python SDK's `speech_to_text_job.create_job()` workflow:
-      1. create_job()  — submit the job with with_diarization=True
-      2. upload_files() — upload the WAV file
-      3. start()       — trigger processing
-      4. wait_until_complete() — poll until done
-      5. download_outputs()    — fetch the JSON transcript
-
+Stage 4 — Sarvam BATCH API for diarization.
 Stage 5 — Convert diarization output into TTS-ready candidate segments.
 """
 from __future__ import annotations
