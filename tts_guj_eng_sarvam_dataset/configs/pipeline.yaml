@@ -1,0 +1,143 @@
+defaults:
+  - _self_
+
+# ─── Paths ───────────────────────────────────────────────
+paths:
+  input_csv: "videos.csv"
+  output_dir: "outputs"
+  audio_dir: "outputs/audio"
+  segments_dir: "outputs/segments"
+  transcripts_dir: "outputs/transcripts"
+  dataset_dir: "outputs/dataset"
+  reports_dir: "reports"
+  logs_dir: "logs"
+
+# ─── Sarvam API ──────────────────────────────────────────
+sarvam:
+  api_key: "${oc.env:SARVAM_API_KEY}"
+  base_url: "https://api.sarvam.ai"
+  asr:
+    endpoint: "/speech-to-text"
+    model: "saarika:v2"
+    languages: ["en-IN", "hi-IN","gu-IN"]
+    with_timestamps: true
+    with_disfluencies: false
+  diarization:
+    endpoint: "/speech-to-text-translate"
+    min_speakers: 1
+    max_speakers: 4
+  llm:
+    endpoint: "/v1/chat/completions"
+    model: "sarvam-m"
+    max_tokens: 1024
+    temperature: 0.1
+
+# ─── Stage 1: Ingestion ──────────────────────────────────
+ingestion:
+  max_retries: 3
+  retry_delay_seconds: 5
+  yt_dlp_options:
+    format: "bestaudio/best"
+    extract_audio: true
+    audio_format: "wav"
+    quiet: false
+    no_warnings: false
+
+# ─── Stage 2: Audio Extraction ───────────────────────────
+audio:
+  sample_rate: 16000
+  channels: 1
+  format: "wav"
+  ffmpeg_loglevel: "error"
+
+# ─── Stage 3: Quality Filtering ──────────────────────────
+quality_filter:
+  min_speech_ratio: 0.5        # At least 60% must be speech
+  max_music_energy_ratio: 0.3  # Music energy threshold
+  rms_floor_db: -35.0          # Silence floor
+  spectral_flatness_threshold: 0.4  # High = noise/music
+  frame_hop_length: 512
+  n_fft: 2048
+  skip_intro_seconds: 40       # Skip first N seconds (intro)
+  skip_outro_seconds: 40       # Skip last N seconds (outro)
+
+# ─── Stage 4: Diarization ────────────────────────────────
+diarization:
+  min_confidence: 0.0
+  min_segment_duration: 1.0
+  max_gap_merge_seconds: 0.3   # Merge gaps shorter than this
+  overlap_tolerance_seconds: 0.1
+
+# ─── Stage 5: Segmentation ───────────────────────────────
+segmentation:
+  min_duration: 30.0
+  max_duration: 30.0
+  target_duration: 30.0
+  min_silence_split_db: -40
+  silence_min_duration: 0.3    # Min silence to split at
+  pad_start_seconds: 0.05      # Tiny padding after cut
+  pad_end_seconds: 0.05
+
+# ─── Stage 6: Transcription ──────────────────────────────
+transcription:
+  batch_size: 10
+  min_asr_confidence: 0.75
+
+# ─── Stage 7: Validation ─────────────────────────────────
+validation:
+  min_transcript_confidence: 0.75
+  min_word_count: 5
+  max_word_count: 120
+  min_chars: 20
+  allowed_languages: ["en-IN", "hi-IN", "gu-IN"]
+  llm_check_enabled: true
+
+# ─── Stage 8: Audio Quality Assessment ───────────────────
+audio_quality:
+  max_clipping_ratio: 0.01     # Max 1% clipped samples
+  min_snr_db: 15.0
+  max_silence_ratio: 0.3
+  min_speech_rate_wpm: 80
+  max_speech_rate_wpm: 220
+
+# ─── Stage 9: Emotion ────────────────────────────────────
+emotion:
+  labels:
+    - neutral
+    - happy
+    - sad
+    - excited
+    - angry
+    - formal
+    - conversational
+    - storytelling
+    - serious
+  min_confidence: 0.5
+  acoustic_weight: 0.4
+  llm_weight: 0.6
+
+# ─── Stage 11: Quality Scoring ───────────────────────────
+scoring:
+  weights:
+    audio_quality: 0.35
+    transcript_quality: 0.35
+    speaker_purity: 0.20
+    emotion_confidence: 0.10
+  thresholds:
+    accept: 0.75
+    review: 0.55
+    reject: 0.0  # Below 0.55 = auto-reject
+
+# ─── Stage 12: Dataset Packaging ─────────────────────────
+packaging:
+  hf_repo_id: "${oc.env:HF_REPO_ID,your-username/indian-tts-dataset}"
+  hf_token: "${oc.env:HF_TOKEN}"
+  private: false
+  dataset_card_template: "configs/dataset_card_template.md"
+  audio_format: "wav"
+
+# ─── Logging ─────────────────────────────────────────────
+logging:
+  level: "INFO"
+  format: "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+  file: "logs/pipeline.log"

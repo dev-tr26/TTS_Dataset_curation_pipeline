@@ -1,0 +1,14 @@
+venv/
+.env
+outputs/
+logs/
+temp_chunks/
+temp_asr/
+temp_diarization/
+.wav
+outputs/
+dis/
+logs/
+.vscode/
+.pytest_cache/
+transcripts/
