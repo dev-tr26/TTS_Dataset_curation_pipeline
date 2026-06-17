@@ -12,7 +12,7 @@ from pathlib import Path
 import librosa
 import numpy as np
 
-from tts_guj_eng_sarvam_dataset.src.schemas import AudioFilterResult, VideoMetadata
+from src.schemas import AudioFilterResult, VideoMetadata
 
 logger = logging.getLogger(__name__)
 

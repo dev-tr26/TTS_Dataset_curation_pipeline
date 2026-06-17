@@ -85,7 +85,7 @@ def main(csv_path: str) -> None:
     # ─────────────────────────────────────────────────────────────────────────
     logger.info("=" * 60)
     logger.info("STAGE 1 — Video Ingestion")
-    from tts_guj_eng_sarvam_dataset.src.ingestion.ingest import ingest_all
+    from src.ingestion.ingest import ingest_all
     video_metas = ingest_all(
         csv_path=csv_path,
         output_dir=audio_dir,
@@ -100,7 +100,7 @@ def main(csv_path: str) -> None:
     # ─────────────────────────────────────────────────────────────────────────
     logger.info("=" * 60)
     logger.info("STAGE 2 — Audio Extraction")
-    from tts_guj_eng_sarvam_dataset.src.preprocessing.audio import extract_audio
+    from src.preprocessing.audio import extract_audio
     for meta in successful:
         raw = Path(meta.raw_audio_path)
         clean_wav = audio_dir / f"{meta.video_id}_clean.wav"
@@ -118,7 +118,7 @@ def main(csv_path: str) -> None:
     # ─────────────────────────────────────────────────────────────────────────
     logger.info("=" * 60)
     logger.info("STAGE 3 — Audio Quality Filtering")
-    from tts_guj_eng_sarvam_dataset.src.preprocessing.audio import detect_speech_regions
+    from src.preprocessing.audio import detect_speech_regions
     qf_cfg = cfg["quality_filter"]
     filter_results = {}
     passed_metas = []
@@ -142,7 +142,7 @@ def main(csv_path: str) -> None:
     # ─────────────────────────────────────────────────────────────────────────
     logger.info("=" * 60)
     logger.info("STAGE 4 — Speaker Diarization")
-    from tts_guj_eng_sarvam_dataset.src.diarization.diarize import SarvamDiarizer, select_dominant_speaker
+    from src.diarization.diarize import SarvamDiarizer, select_dominant_speaker
     diarizer = SarvamDiarizer(api_key=sarvam_key, base_url=sarvam_url)
 
     diarization_map: dict = {}  # video_id → (dominant_speaker, segments)
@@ -160,7 +160,7 @@ def main(csv_path: str) -> None:
     # ─────────────────────────────────────────────────────────────────────────
     logger.info("=" * 60)
     logger.info("STAGE 5 — Candidate Segment Generation")
-    from tts_guj_eng_sarvam_dataset.src.diarization.diarize import generate_candidate_segments
+    from src.diarization.diarize import generate_candidate_segments
     seg_cfg = cfg["segmentation"]
     all_candidates = []
     lang_counters = {"en-IN": 0, "hi-IN": 0, "gu-IN": 0}
@@ -196,7 +196,7 @@ def main(csv_path: str) -> None:
     # ─────────────────────────────────────────────────────────────────────────
     logger.info("=" * 60)
     logger.info("STAGE 6 — Transcription")
-    from tts_guj_eng_sarvam_dataset.src.transcription.transcribe import SarvamASR
+    from src.transcription.transcribe import SarvamASR
     asr = SarvamASR(api_key=sarvam_key, base_url=sarvam_url)
     transcriptions = asr.transcribe_batch(
         all_candidates,
@@ -209,7 +209,7 @@ def main(csv_path: str) -> None:
     # ─────────────────────────────────────────────────────────────────────────
     logger.info("=" * 60)
     logger.info("STAGE 7 — Transcript Validation")
-    from tts_guj_eng_sarvam_dataset.src.validation.validate import TranscriptValidator
+    from src.validation.validate import TranscriptValidator
     val_cfg = cfg["validation"]
     validator = TranscriptValidator(
         api_key=sarvam_key,
@@ -230,7 +230,7 @@ def main(csv_path: str) -> None:
     # ─────────────────────────────────────────────────────────────────────────
     logger.info("=" * 60)
     logger.info("STAGE 8 — Audio Quality Assessment")
-    from tts_guj_eng_sarvam_dataset.src.quality.assess import compute_audio_quality
+    from src.quality.assess import compute_audio_quality
     aq_cfg = cfg["audio_quality"]
     audio_metrics = {}
     candidate_map = {c.segment_id: c for c in all_candidates}
@@ -258,7 +258,7 @@ def main(csv_path: str) -> None:
     # ─────────────────────────────────────────────────────────────────────────
     logger.info("=" * 60)
     logger.info("STAGE 9 — Emotion / Style Labeling")
-    from tts_guj_eng_sarvam_dataset.src.emotion.label import EmotionLabeler
+    from src.emotion.label import EmotionLabeler
     emo_cfg = cfg["emotion"]
     labeler = EmotionLabeler(
         api_key=sarvam_key,
@@ -278,8 +278,8 @@ def main(csv_path: str) -> None:
     # ─────────────────────────────────────────────────────────────────────────
     logger.info("=" * 60)
     logger.info("STAGE 11 — Quality Scoring")
-    from tts_guj_eng_sarvam_dataset.src.quality.scorer import compute_final_score
-    from tts_guj_eng_sarvam_dataset.src.schemas import ReviewStatus
+    from src.quality.scorer import compute_final_score
+    from src.schemas import ReviewStatus
 
     quality_scores = {}
     for seg_id in emotions:

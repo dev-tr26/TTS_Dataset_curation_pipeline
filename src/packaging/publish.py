@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from tts_guj_eng_sarvam_dataset.src.schemas import DatasetSample, ReviewStatus
+from src.schemas import DatasetSample, ReviewStatus
 
 logger = logging.getLogger(__name__)
 

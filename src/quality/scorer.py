@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import logging
 
-from tts_guj_eng_sarvam_dataset.src.schemas import (
+from src.schemas import (
     AudioQualityMetrics,
     EmotionResult,
     QualityScore,

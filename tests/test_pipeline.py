@@ -17,20 +17,20 @@ import pytest
 # ─── Schema tests ─────────────────────────────────────────────────────────────
 
 def test_video_input_valid():
-    from tts_guj_eng_sarvam_dataset.src.schemas import Language, VideoInput
+    from src.schemas import Language, VideoInput
     vi = VideoInput(video_url="https://youtube.com/watch?v=dQw4w9WgXcQ", language=Language.EN_IN)
     assert vi.video_url == "https://youtube.com/watch?v=dQw4w9WgXcQ"
 
 
 def test_video_input_invalid_url():
     from pydantic import ValidationError
-    from tts_guj_eng_sarvam_dataset.src.schemas import Language, VideoInput
+    from src.schemas import Language, VideoInput
     with pytest.raises(ValidationError):
         VideoInput(video_url="https://vimeo.com/12345", language=Language.EN_IN)
 
 
 def test_dataset_sample_schema():
-    from tts_guj_eng_sarvam_dataset.src.schemas import DatasetSample, Emotion, Language, ReviewStatus
+    from src.schemas import DatasetSample, Emotion, Language, ReviewStatus
     sample = DatasetSample(
         audio="clips/english/en_001.wav",
         language=Language.EN_IN,
@@ -60,7 +60,7 @@ def test_dataset_sample_schema():
 # ─── CSV loading tests ─────────────────────────────────────────────────────────
 
 def test_load_video_inputs():
-    from tts_guj_eng_sarvam_dataset.src.ingestion.ingest import load_video_inputs
+    from src.ingestion.ingest import load_video_inputs
     with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
         f.write("video_url,language\n")
         f.write("https://youtube.com/watch?v=abc123defgh,en-IN\n")
@@ -73,7 +73,7 @@ def test_load_video_inputs():
 
 
 def test_load_video_inputs_skips_invalid():
-    from tts_guj_eng_sarvam_dataset.src.ingestion.ingest import load_video_inputs
+    from src.ingestion.ingest import load_video_inputs
     with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
         f.write("video_url,language\n")
         f.write("https://youtube.com/watch?v=abc123defgh,en-IN\n")
@@ -87,7 +87,7 @@ def test_load_video_inputs_skips_invalid():
 
 def test_audio_quality_clean_signal():
     """Clean synthetic signal should pass quality checks."""
-    from tts_guj_eng_sarvam_dataset.src.quality.assess import compute_audio_quality
+    from src.quality.assess import compute_audio_quality
     import soundfile as sf
 
     sr = 16000
@@ -111,7 +111,7 @@ def test_audio_quality_clean_signal():
 
 def test_audio_quality_clipped_signal():
     """Heavily clipped signal should have high clipping ratio."""
-    from tts_guj_eng_sarvam_dataset.src.quality.assess import compute_audio_quality
+    from src.quality.assess import compute_audio_quality
     import soundfile as sf
 
     sr = 16000
@@ -135,8 +135,8 @@ def test_audio_quality_clipped_signal():
 # ─── Transcript validation tests ─────────────────────────────────────────────
 
 def test_transcript_normalization_english():
-    from tts_guj_eng_sarvam_dataset.src.schemas import Language, TranscriptionResult
-    from tts_guj_eng_sarvam_dataset.src.validation.validate import TranscriptValidator
+    from src.schemas import Language, TranscriptionResult
+    from src.validation.validate import TranscriptValidator
 
     validator = TranscriptValidator(api_key="dummy")
     result = validator._normalize("  hello   world  uh um  ", Language.EN_IN)
@@ -147,16 +147,16 @@ def test_transcript_normalization_english():
 
 
 def test_language_check_english():
-    from tts_guj_eng_sarvam_dataset.src.schemas import Language
-    from tts_guj_eng_sarvam_dataset.src.validation.validate import TranscriptValidator
+    from src.schemas import Language
+    from src.validation.validate import TranscriptValidator
     v = TranscriptValidator(api_key="dummy")
     assert v._check_language("Hello, how are you today?", Language.EN_IN)
     assert not v._check_language("नमस्ते", Language.EN_IN)
 
 
 def test_language_check_hindi():
-    from tts_guj_eng_sarvam_dataset.src.schemas import Language
-    from tts_guj_eng_sarvam_dataset.src.validation.validate import TranscriptValidator
+    from src.schemas import Language
+    from src.validation.validate import TranscriptValidator
     v = TranscriptValidator(api_key="dummy")
     assert v._check_language("नमस्ते आप कैसे हैं", Language.HI_IN)
     assert not v._check_language("Hello how are you", Language.HI_IN)
@@ -165,8 +165,8 @@ def test_language_check_hindi():
 # ─── Quality scorer tests ─────────────────────────────────────────────────────
 
 def test_quality_scorer_accept():
-    from tts_guj_eng_sarvam_dataset.src.quality.scorer import compute_final_score
-    from tts_guj_eng_sarvam_dataset.src.schemas import (
+    from src.quality.scorer import compute_final_score
+    from src.schemas import (
         AudioQualityMetrics,
         Emotion,
         EmotionResult,
@@ -196,8 +196,8 @@ def test_quality_scorer_accept():
 
 
 def test_quality_scorer_reject_clipping():
-    from tts_guj_eng_sarvam_dataset.src.quality.scorer import compute_final_score
-    from tts_guj_eng_sarvam_dataset.src.schemas import (
+    from src.quality.scorer import compute_final_score
+    from src.schemas import (
         AudioQualityMetrics,
         Emotion,
         EmotionResult,
@@ -231,8 +231,8 @@ def test_quality_scorer_reject_clipping():
 # ─── Diarization segment merging tests ────────────────────────────────────────
 
 def test_merge_nearby_segments():
-    from tts_guj_eng_sarvam_dataset.src.diarization.diarize import _merge_nearby_segments
-    from tts_guj_eng_sarvam_dataset.src.schemas import DiarizationSegment
+    from src.diarization.diarize import _merge_nearby_segments
+    from src.schemas import DiarizationSegment
 
     segs = [
         DiarizationSegment(video_id="v1", speaker_id="A",

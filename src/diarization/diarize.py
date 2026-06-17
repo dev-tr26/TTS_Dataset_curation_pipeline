@@ -27,7 +27,7 @@ from typing import Any
 import librosa
 import soundfile as sf
 
-from tts_guj_eng_sarvam_dataset.src.schemas import (
+from src.schemas import (
     CandidateSegment,
     DiarizationSegment,
     Language,
@@ -388,7 +388,7 @@ def generate_candidate_segments(
     - Max 20s: Longer clips risk attention drift in seq2seq TTS.
     - 50ms padding: avoid clipping first/last phoneme.
     """
-    from tts_guj_eng_sarvam_dataset.src.preprocessing.audio import extract_audio_segment
+    from src.preprocessing.audio import extract_audio_segment
 
     audio_path = Path(audio_path)
     output_dir.mkdir(parents=True, exist_ok=True)

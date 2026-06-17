@@ -13,7 +13,7 @@ from typing import Iterator
 
 import yt_dlp
 
-from tts_guj_eng_sarvam_dataset.src.schemas import Language, VideoInput, VideoMetadata
+from src.schemas import Language, VideoInput, VideoMetadata
 
 logger = logging.getLogger(__name__)
 

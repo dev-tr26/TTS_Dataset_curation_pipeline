@@ -15,7 +15,7 @@ from typing import Any
 
 import requests
 
-from tts_guj_eng_sarvam_dataset.src.schemas import (
+from src.schemas import (
     CandidateSegment,
     Language,
     TranscriptionResult,

@@ -22,7 +22,7 @@ logger = logging.getLogger("package")
 
 def main() -> None:
     import yaml
-    from tts_guj_eng_sarvam_dataset.src.packaging.publish import (
+    from src.packaging.publish import (
         build_dataset_dataframe,
         generate_analytics,
         generate_dataset_card,
@@ -74,7 +74,7 @@ def main() -> None:
     )
 
     # Build DatasetSample objects for accepted items
-    from tts_guj_eng_sarvam_dataset.src.schemas import DatasetSample, Emotion, Language, ReviewStatus
+    from src.schemas import DatasetSample, Emotion, Language, ReviewStatus
     samples: list[DatasetSample] = []
     for item in queue:
         if item["segment_id"] not in accepted_ids:
