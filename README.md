@@ -35,3 +35,81 @@ https://huggingface.co/datasets/rtxtd/tts-dataset-guj-eng
 | **Speaker Type**           | Clean, single-speaker recordings              |
 | **Source**                 | YouTube audio segments                        |
 | **Format**                 | TTS-ready audio + transcripts + metadata      |
+
+
+#### FLOW 
+
+YouTube Video
+      |
+      ↓
+Download Audio
+      |
+      ↓
+Clean Audio
+      |
+      ↓
+Find Single Speaker
+      |
+      ↓
+Split into TTS Clips
+      |
+      ↓
+Generate Transcript
+      |
+      ↓
+Check Audio + Text Quality
+      |
+      ↓
+Add Emotion/Style Labels
+      |
+      ↓
+Human Review
+      |
+      ↓
+HuggingFace Dataset
+
+
+```
+tts_dataset_pipeline/
+│
+├── configs/
+│   └── pipeline.yaml          # all thresholds, API settings, weights
+│
+├── src/
+│   ├── schemas.py             # all Pydantic data models
+│   ├── ingestion/
+│   │   └── ingest.py          # Stage 1: yt-dlp download + provenance
+│   ├── preprocessing/
+│   │   └── audio.py           # Stage 2+3: ffmpeg extraction + speech/music filtering
+│   ├── diarization/
+│   │   └── diarize.py         # Stage 4+5: Sarvam Batch API diarization + segment cutting
+│   ├── transcription/
+│   │   └── transcribe.py      # Stage 6+7: Sarvam ASR + 4-layer transcript validation
+│   ├── validation/
+│   │   └── validate.py        # re-export of TranscriptValidator
+│   ├── emotion/
+│   │   └── label.py           # Stage 9: acoustic + Sarvam LLM emotion labeling
+│   ├── quality/
+│   │   ├── assess.py          # Stage 8: SNR, clipping, silence, speech rate scoring
+│   │   └── scorer.py          # Stage 11: weighted final quality score
+│   |
+├── scripts/
+│   ├── run_pipeline.py        # main orchestrator: runs all stages end-to-end
+│   ├── package_dataset.py     # run after review: packages + pushes to HF
+│   └── publish_dataset.py     # standalone: label emotions + publish existing JSONs
+│
+├── tests/
+│   └── test_pipeline.py       # unit tests for schemas, scoring, validation, audio
+│
+├── transcripts/               # final dataset output
+│   ├── english/
+│   │   ├── en_transcripts.json
+│   │   └── *.wav
+│   └── gujarati/
+│       ├── gu_transcripts.json
+│       └── *.wav
+│
+├── videos.csv                 # input: YouTube URLs + language
+├── requirements.txt
+└── README.md
+```

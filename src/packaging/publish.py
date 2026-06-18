@@ -26,7 +26,7 @@ Built with the **TTS Dataset Pipeline** using:
 
 '''
 
-
+DATASET_CARD_TEMPLATE = ""
 def build_dataset_dataframe(
     samples: list[DatasetSample],
     accepted_ids: set[str],

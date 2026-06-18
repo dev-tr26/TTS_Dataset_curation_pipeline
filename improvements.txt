@@ -1,0 +1,11 @@
+# Sentence boundary-aware segmentation
+- clip segments only from when a sentence is started and sentence is completed 
+
+# Multi-language detection inside a sample
+- if multiple languages detected in an sample don't use it 
+
+# Remove non-speech regions
+- like laughters , applause
+
+# Speaker consistency across dataset 
+- little words by other speakers discarded 
