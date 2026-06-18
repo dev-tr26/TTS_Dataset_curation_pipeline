@@ -38,38 +38,6 @@ https://huggingface.co/datasets/rtxtd/tts-dataset-guj-eng
 | **Format**                 | TTS-ready audio + transcripts + metadata      |
 
 
-#### FLOW 
-
-YouTube Video
-      |
-      ↓
-Download Audio
-      |
-      ↓
-Clean Audio
-      |
-      ↓
-Find Single Speaker
-      |
-      ↓
-Split into TTS Clips
-      |
-      ↓
-Generate Transcript
-      |
-      ↓
-Check Audio + Text Quality
-      |
-      ↓
-Add Emotion/Style Labels
-      |
-      ↓
-Human Review
-      |
-      ↓
-HuggingFace Dataset
-
-
 ```
 tts_dataset_pipeline/
 │
